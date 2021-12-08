@@ -1,0 +1,126 @@
+---
+title: "TidyTuesday World Spider Database"
+author: "David Jackson"
+date: "12/7/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE,echo = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(janitor)
+library(lubridate)
+library(scales)
+```
+```{r}
+spiders <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-12-07/spiders.csv') %>% filter(year >=2010)
+spiders <- spiders %>% janitor::clean_names()
+spiders <- spiders %>% janitor::remove_empty(which = c("cols","rows"))
+```
+
+### Discoveries by Year: 2010 - 2021
+
+```{r}
+spiders %>% count(year) %>% 
+  ggplot(aes(x=year,y=n)) + geom_line() +
+  labs(title = "Number of Spiders Discovered by Year",
+       x="Year of Discovery",y="Number of Spiders Discovered") +
+  geom_smooth(aes(x=year,y=n))
+```
+
+### Count of Spiders Discovered by Author
+
+```{r}
+spiders %>% count(author,sort =T) %>% top_n(10) %>% ggplot(aes(x=reorder(author,n),y=n)) +
+  geom_col() + coord_flip() +
+  labs(title ="Number of Discoveries by Author",
+       x="Author",y="Number of Discoveries")
+```
+
+## Distribuation by Location: 2010-2021
+
+```{r}
+spiders %>% count(distribution,sort =T) %>% top_n(10) %>%
+  ggplot(aes(x=reorder(distribution,n),y=n)) + geom_col(aes(fill=distribution)) +
+  theme(axis.title.y=element_blank(),
+    axis.text.y=element_blank(),
+    axis.ticks.y=element_blank()) +
+  labs(title = "Top 10 Countries with Discoveries: 2010 - 2021",
+       y="Number of Discoveries") + coord_flip()
+```
+
+```{r}
+spiders %>% count(family,sort =T) %>% top_n(10) %>%
+  ggplot(aes(x=reorder(family,n),y=n)) + geom_col(aes(fill=family)) +
+  theme(axis.title.y=element_blank(),
+    axis.text.y=element_blank(),
+    axis.ticks.y=element_blank()) +
+  labs(title = "Top 10 Families: 2010 - 2021",
+       y="Number of Discoveries") + coord_flip()
+```
+
+### US Discoveries by Family and Genus
+
+```{r}
+spiders %>% filter(distribution =="USA") %>% count(family,genus,sort =T) %>%
+  top_n(10) %>%
+  ggplot()  + geom_col(aes(x=reorder(family,n),y=n,fill=genus)) +
+  theme(axis.text.x = element_text(angle = 45)) +
+  labs(title = "Top 10 US Spiders by Family and Genus",x="Family",
+       y="Number of Spiders")
+```
+
+### US Discoveries by Species 
+
+```{r}
+spiders %>% filter(distribution =="USA") %>% count(species,sort =T) %>%
+  head(10) %>%
+  ggplot()  + geom_col(aes(x=reorder(species,n),y=n)) +
+  theme(axis.text.x = element_text(angle = 45)) +
+  labs(title = "Top 10 USA Spiders by Species",x="Species",
+       y="Number of Spiders")
+```
+
+## Brazil
+
+```{r}
+
+spiders %>% filter(distribution =="Brazil") %>% count(family,sort =T) %>%
+  top_n(10) %>%
+  ggplot()  + geom_col(aes(x=reorder(family,n),y=n)) +
+  theme(axis.text.x = element_text(angle = 45)) +
+  labs(title = "Top 10 Brizal Spiders by Family",x="Family",
+       y="Number of Spiders")
+```
+
+
+```{r}
+
+spiders %>% filter(distribution =="Brazil") %>% count(genus,sort =T) %>%
+  top_n(10) %>%
+  ggplot()  + geom_col(aes(x=reorder(genus,n),y=n,fill=genus)) +
+  theme(axis.text.x = element_text(angle = 45)) +
+  labs(title = "Top 10 Brazill Spiders by Genus",x="Genus",
+       y="Number of Spiders") +
+   theme(axis.title.x=element_blank(),
+    axis.text.x=element_blank(),
+    axis.ticks.x=element_blank())
+```
+
+### Brazil's Top 10 Spiders by Species
+
+
+```{r}
+
+spiders %>% filter(distribution =="Brazil") %>% count(species,sort =T) %>%
+  top_n(10) %>%
+  ggplot()  + geom_col(aes(x=reorder(species,n),y=n,fill=species)) +
+  theme(axis.text.x = element_text(angle = 45)) +
+  labs(title = "Top 10 Brazill Spiders by Species",x="Species",
+       y="Number of Spiders") +
+   theme(axis.title.x=element_blank(),
+    axis.text.x=element_blank(),
+    axis.ticks.x=element_blank())
+```
+
