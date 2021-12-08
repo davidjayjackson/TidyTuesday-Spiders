@@ -2,7 +2,7 @@
 title: "TidyTuesday World Spider Database"
 author: "David Jackson"
 date: "12/7/2021"
-output: html_document
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE,echo = FALSE}
